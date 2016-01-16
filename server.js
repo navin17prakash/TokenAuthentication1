@@ -86,10 +86,17 @@ apiRoutes.post( '/login',function(request,response) {
             {
                 isLoginSuccess =true;
                 console.log('login performed by'+ request.body.name);
+                var token =jwt.sign(user,app.get('superSecret'),{expiresInMinutes : 120});
+                var responseJSON ={
+                    name : request.body.name,
+                    token : token,
+                    message : 'sending token'
+                }
+                response.send(responseJSON);
             }
         }
         })
 });
 
-app.use('/api',apiRoutes);
+app.use('/api',apiRoutes);  
 
