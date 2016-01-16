@@ -50,6 +50,10 @@ app.get('/setup',function(request,response){
         else console.log('save has failed');
     });
 });
+apiRoutes.get('/',function (request,response){
+    response.send('use the proper api routes');
+});
+
 
 apiRoutes.get('/users',function(request,response){
     User.find({},function(error, users) {
