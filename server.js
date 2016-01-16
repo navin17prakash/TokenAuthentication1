@@ -62,5 +62,34 @@ apiRoutes.get('/users',function(request,response){
     });
     
 });
+
+apiRoutes.post('/createuser',function(request,response){
+    console.log('post api is hit ');
+    console.log(request.body);
+    console.log('value sent is' + request.body.navin);
+    //console.log(request.body.navin1);
+    
+});
+
+apiRoutes.post( '/login',function(request,response) {
+     var isLoginSuccess = false;
+    console.log('attempting login');
+    User.findOne({
+        name : request.body.name
+    },function(error,user){
+        if(error)
+        {
+            response.send('Login has failed.Please enter a valid user name and passord');
+        }
+        else {
+            if(user.password === request.body.password)
+            {
+                isLoginSuccess =true;
+                console.log('login performed by'+ request.body.name);
+            }
+        }
+        })
+});
+
 app.use('/api',apiRoutes);
 
