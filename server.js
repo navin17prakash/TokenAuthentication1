@@ -10,6 +10,7 @@ var app =express();
 var port = 8080;
 
 var apiRoutes = express.Router();
+
 //Connecting to the MongoDB server
 mongoose.connect(config.dbURL,function(error){
     if(error){
