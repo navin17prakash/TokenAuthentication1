@@ -148,10 +148,11 @@ var createNewUser = function(request){
     var responseJSON;
     console.log('creating user by navin');
     User.findOne({name : request.body.name},function(error,user){
-        if(error) { adminJSON = { message : 'Credential entered is wrong'};
-                    
-                  }
+        if(error) { 
+           adminJSON = { message : 'Entered userid is not yet created.'};
+                  }//end if 
         else {
+            if(true){
             if(user.admin){
                 console.log('admin user has logged');
                 adminJSON = {message : 'Admin found,User created'};
@@ -176,7 +177,7 @@ var createNewUser = function(request){
             } //end admin checking
          else { console.log('Not logged as an admin');}   
         } //end findone else
-        
+        }
     });
     return responseJSON;
     }
