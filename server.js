@@ -22,13 +22,21 @@ app.set('superSecret',config.secret);
 app.use(bodyParser.urlencoded({extended :false}));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
+var User = mongoose.model('userDataBank',userSchema);
+
+app.use('/api',apiRoutes);
+app.listen(port);
+console.log('listening on' + port);
+console.log('value of supersecret is' + app.get('superSecret'));
 
 app.get('/',function (request,response){
     response.send('Please re-drirect ro ./api/welcome to get the route documentation');
 });
+
 apiRoutes.get('/',function (request,response){
     response.send('Please re-drirect ro ./api/welcome to get the route documentation');
 });
+
 apiRoutes.get('/welcome', function(request,response){
    var responseJSON = {
        welcome : '/api/welcome',
@@ -40,12 +48,6 @@ apiRoutes.get('/welcome', function(request,response){
    response.json(responseJSON);
     
 });
-var User = mongoose.model('userDataBank',userSchema);
-console.log(Object.keys(apiRoutes));
-app.listen(port);
-console.log('listening on' + port);
-console.log('value of supersecret is' + app.get('superSecret'));
-
 
 apiRoutes.get('/setupsuperadmin',function(request,response){
     var firstUser= new User({
@@ -171,5 +173,5 @@ var gappu = function(isTokenVerified,request){
     }
 
 
-app.use('/api',apiRoutes);  
+  
 
