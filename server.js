@@ -10,7 +10,7 @@ var app =express();
 var port = 8080;
 
 var apiRoutes = express.Router();
-
+//Connecting to the MongoDB server
 mongoose.connect(config.dbURL,function(error){
     if(error){
         console.log('Attempted DB Connection has failed');
@@ -18,25 +18,35 @@ mongoose.connect(config.dbURL,function(error){
      else console.log ('Successfully connected to Database');   
 });
 
+//setting up the secret key for hashing the JSON web tokens
 app.set('superSecret',config.secret);
+
+//configuring the required middlewares
 app.use(bodyParser.urlencoded({extended :false}));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
+
+//creating the model on the Database if the connection is successful
 var User = mongoose.model('userDataBank',userSchema);
 
+//Intializing the express application
 app.use('/api',apiRoutes);
 app.listen(port);
-console.log('listening on' + port);
-console.log('value of supersecret is' + app.get('superSecret'));
 
+//server is started
+console.log('Server has been sarted on Port :- ' + port);
+
+//route ./
 app.get('/',function (request,response){
     response.send('Please re-drirect ro ./api/welcome to get the route documentation');
 });
 
+//route ./api/
 apiRoutes.get('/',function (request,response){
     response.send('Please re-drirect ro ./api/welcome to get the route documentation');
 });
 
+//route ./api/welcome
 apiRoutes.get('/welcome', function(request,response){
    var responseJSON = {
        welcome : '/api/welcome',
@@ -48,7 +58,7 @@ apiRoutes.get('/welcome', function(request,response){
    response.json(responseJSON);
     
 });
-
+//route ./api/setupsuperadmin
 apiRoutes.get('/setupsuperadmin',function(request,response){
     var firstUser= new User({
         name : 'root',
@@ -56,30 +66,28 @@ apiRoutes.get('/setupsuperadmin',function(request,response){
         admin : true
     });
     firstUser.save(function(error){
-        if(! error)
+        if(!error)
         {
-            console.log('1 user has been saved successfully');
-           response.send('1 user has been saved successfully');
+           console.log('The root user has been setup with admin privileges');
+           response.send('The root user has been setup with admin privileges');
         }
-        else console.log('save has failed');
+        else console.log('Creation of root user has failed');
     });
 });
 
 
-
+//route ./api/users
 apiRoutes.get('/users',function(request,response){
     User.find({},function(error, users) {
     console.log('users are found');
     response.json(users);
     });
-    
 });
 
 
-
+//route ./api/login
 apiRoutes.post( '/login',function(request,response) {
      var isLoginSuccess = false;
-    console.log('attempting login');
     User.findOne({
         name : request.body.name
     },function(error,user){
@@ -103,29 +111,28 @@ apiRoutes.post( '/login',function(request,response) {
         }
         })
 });
+
+//route ./api/createuser
 apiRoutes.post('/createuser',function createUserCallback(request,response){
-    var isTokenVerfied=false;
     var responseJSON;
     var token = request.body.token || request.query.token || request.headers['x-access-token'];
     if(token){
         //decode and verify token
         jwt.verify(token, app.get('superSecret'), function(error,decoded){
             //if verificition is successful then
-            console.log('value of error is' + error);
             if(error){
                 console.log('Failed to decode the Token');
                 responseJSON = {
                     success : false,
+                    error : error,
                     message : 'Wrong or empty token has been provided'
                 };//close responseJSON
-                isTokenVerfied = false;
                 response.json(responseJSON);
                 
             }//emd inner if block 
             else {
-            isTokenVerfied =true;
             //create user if token has been provided
-            responseJSON = gappu(isTokenVerfied,request);
+            responseJSON = createNewUser(request);
             response.json(responseJSON);
             }//end inner else block 
         });
@@ -133,7 +140,9 @@ apiRoutes.post('/createuser',function createUserCallback(request,response){
     
     
 });
-var gappu = function(isTokenVerified,request){
+
+//function to create new user if the logged in user has role admin
+var createNewUser = function(request){
     console.log('am called');
     var adminJSON;
     var responseJSON;
