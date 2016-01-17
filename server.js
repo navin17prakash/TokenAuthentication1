@@ -34,16 +34,16 @@ app.use('/api',apiRoutes);
 app.listen(port);
 
 //server is started
-console.log('Server has been sarted on Port :- ' + port);
+console.log('Server has been started on Port :- ' + port);
 
 //route ./
 app.get('/',function (request,response){
-    response.send('Please re-drirect ro ./api/welcome to get the route documentation');
+    response.send('Please re-drirect to ./api/welcome to get the route documentation');
 });
 
 //route ./api/
 apiRoutes.get('/',function (request,response){
-    response.send('Please re-drirect ro ./api/welcome to get the route documentation');
+    response.send('Please re-drirect to ./api/welcome to get the route documentation');
 });
 
 //route ./api/welcome
@@ -56,8 +56,8 @@ apiRoutes.get('/welcome', function(request,response){
        createUser : '/api/createuser'
    };
    response.json(responseJSON);
-    
 });
+
 //route ./api/setupsuperadmin
 apiRoutes.get('/setupsuperadmin',function(request,response){
     var firstUser= new User({
@@ -75,7 +75,6 @@ apiRoutes.get('/setupsuperadmin',function(request,response){
     });
 });
 
-
 //route ./api/users
 apiRoutes.get('/users',function(request,response){
     User.find({},function(error, users) {
@@ -84,10 +83,9 @@ apiRoutes.get('/users',function(request,response){
     });
 });
 
-
 //route ./api/login
 apiRoutes.post( '/login',function(request,response) {
-     var isLoginSuccess = false;
+    var isLoginSuccess = false;
     User.findOne({
         name : request.body.name
     },function(error,user){
@@ -129,57 +127,49 @@ apiRoutes.post('/createuser',function createUserCallback(request,response){
                 };//close responseJSON
                 response.json(responseJSON);
                 
-            }//emd inner if block 
+            }//end inner if block 
             else {
             //create user if token has been provided
             responseJSON = createNewUser(request);
-            response.json(responseJSON);
+            response.send('Check the Database for the new user');
             }//end inner else block 
         });
     }
-    
-    
 });
 
 //function to create new user if the logged in user has role admin
 var createNewUser = function(request){
-    console.log('am called');
     var adminJSON;
     var responseJSON;
-    console.log('creating user by navin');
     User.findOne({name : request.body.name},function(error,user){
         if(error) { 
-           adminJSON = { message : 'Entered userid is not yet created.'};
-                  }//end if 
+           adminJSON = { message : 'Entered userid is not yet created.'};//end JSON object
+                  }  
         else {
             if(user.password === request.body.password){
             if(user.admin){
-                console.log('admin user has logged');
+                console.log('Admin user has logged');
                 adminJSON = {message : 'Admin found,User created'};
-                console.log('trying hard');
                 var createdUser = new User({
                                     name : request.body.newName,
                                     password : request.body.newPassword,
                                     admin : request.body.newAdmin
-    });
+    });// end creating new user from the request
+                //attempt made to save the user
                 createdUser.save(function(error){
                              if(!error)
                                  {
-                                    console.log('1 user has been saved successfully');
-                                    responseJSON = { 
-                    admin : adminJSON
-    };
-    
-    
-                                   }
-                                else console.log('save has failed');
+                                    console.log('User has been created successfuly');
+                                    responseJSON = { admin : adminJSON }; //response JSON Object
+                                  }
+                              else console.log('Attempt to create the user has failed.Please check');
                               });
-            } //end admin checking
-         else { console.log('Not logged as an admin');}   
-        } else {console.log('wrong password'); //end findone else
-        }
+            }//ending if conditon
+          else { console.log('Current User does not have Admin Privileges');}   
+        } else { console.log('Entered Credentials are wrong.');} //end else block here
+        } //end outermost else block
     });
-    return responseJSON;
+    return responseJSON; //the cooked response is returned.
     }
 
 
