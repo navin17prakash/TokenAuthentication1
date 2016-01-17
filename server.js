@@ -21,11 +21,23 @@ mongoose.connect(config.dbURL,function(error){
 app.set('superSecret',config.secret);
 app.use(bodyParser.urlencoded({extended :false}));
 app.use(bodyParser.json());
-app.use(morgan('dev'));
+app.use(morgan('combined'));
 
-
-app.get('/sample', function(request,response){
-   response.send("hello this is sample");
+app.get('/',function (request,response){
+    response.send('Please re-drirect ro ./api/welcome to get the route documentation');
+});
+apiRoutes.get('/',function (request,response){
+    response.send('Please re-drirect ro ./api/welcome to get the route documentation');
+});
+apiRoutes.get('/welcome', function(request,response){
+   var responseJSON = {
+       welcome : '/api/welcome',
+       getallusers : '/api/users',
+       setupsuperAdmin : '/api/setupsuperadmin',
+       login : '/api/login',
+       createUser : '/api/createuser'
+   };
+   response.json(responseJSON);
     
 });
 var User = mongoose.model('userDataBank',userSchema);
@@ -35,7 +47,7 @@ console.log('listening on' + port);
 console.log('value of supersecret is' + app.get('superSecret'));
 
 
-apiRoutes.get('/setupSuperAdmin',function(request,response){
+apiRoutes.get('/setupsuperadmin',function(request,response){
     var firstUser= new User({
         name : 'root',
         password : 'root',
@@ -50,9 +62,7 @@ apiRoutes.get('/setupSuperAdmin',function(request,response){
         else console.log('save has failed');
     });
 });
-apiRoutes.get('/',function (request,response){
-    response.send('use the proper api routes');
-});
+
 
 
 apiRoutes.get('/users',function(request,response){
@@ -63,11 +73,7 @@ apiRoutes.get('/users',function(request,response){
     
 });
 
-apiRoutes.get('/allusers',function(request,response){
-    console.log('Getting all the users');
-    console.log(request.body);
-    console.log('value sent is' + request.body.navin);
-});
+
 
 apiRoutes.post( '/login',function(request,response) {
      var isLoginSuccess = false;
