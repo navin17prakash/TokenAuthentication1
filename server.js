@@ -35,10 +35,10 @@ console.log('listening on' + port);
 console.log('value of supersecret is' + app.get('superSecret'));
 
 
-apiRoutes.get('/setuprootuser',function(request,response){
+apiRoutes.get('/setupSuperAdmin',function(request,response){
     var firstUser= new User({
-        name : 'navinprakash',
-        password : 'indiaindia',
+        name : 'root',
+        password : 'root',
         admin : true
     });
     firstUser.save(function(error){
