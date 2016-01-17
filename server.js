@@ -152,7 +152,7 @@ var createNewUser = function(request){
            adminJSON = { message : 'Entered userid is not yet created.'};
                   }//end if 
         else {
-            if(true){
+            if(user.password === request.body.password){
             if(user.admin){
                 console.log('admin user has logged');
                 adminJSON = {message : 'Admin found,User created'};
@@ -176,7 +176,7 @@ var createNewUser = function(request){
                               });
             } //end admin checking
          else { console.log('Not logged as an admin');}   
-        } //end findone else
+        } else {console.log('wrong password'); //end findone else
         }
     });
     return responseJSON;
