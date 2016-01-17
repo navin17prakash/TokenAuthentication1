@@ -31,3 +31,7 @@ Following information needs to be provided on the configuration file.
        Parameters name,password,token,newName,newPassword,newAdmin,token
        Note-newAdmin is boolean. Provide 'true' if the news user has be provided admin role.
        --This is post API. Parameters are provided as x-www-form-urlencoded
+       
+#Thanks
+#Contact Info
+    email -navinprakash.in@live.com,navin17prakash@gmail.com
